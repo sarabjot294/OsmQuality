@@ -1,8 +1,10 @@
-﻿using Logic;
+﻿using Microsoft.EntityFrameworkCore;
 using OsmQuality.api;
+using OsmQuality.db;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,28 +20,25 @@ namespace OsmQuality
         {
             Console.WriteLine("Hello World!");
             String dbName = "geo_ve_check";
-            List<PlanetOsmWay> ways = new List<PlanetOsmWay>();
-            List<PlanetOsmNode> nodes = new List<PlanetOsmNode>();
-            using (CountryDbContext db = new CountryDbContext(dbName))
-            {
-                // Must convert to a list: https://stackoverflow.com/questions/61052687/a-command-is-already-in-progress/61054398
-                // Load into memory.
-                ways = db.PlanetOsmWays.ToList<PlanetOsmWay>();
-                nodes = db.PlanetOsmNodes.ToList<PlanetOsmNode>();
+           
+            DbTransactions.checkDbRawQuery();
+            //API(nodes);
+            //Console.WriteLine("Total ways : " + ways[0].Tags[0]);
 
-            }
-            OsmApiClient osmApiClient = new OsmApiClient();
-            Dictionary<long, List<NodeHistory>> nodeHistories = new Dictionary<long, List<NodeHistory>>();
-            for (int i = 0; i < 100; i++)
-            {
-                nodeHistories.Add(nodes[i].Id, osmApiClient.ReadAPI("node", nodes[i].Id.ToString()));
-                Console.WriteLine(i + " request completed total history for the node " + nodes[i].ToString() + " is "  + nodeHistories.GetValueOrDefault(nodes[i].Id).Count);
-            }
-
-            Console.WriteLine("Total Nodes: " + nodes.Count);
-            Console.WriteLine("Total Ways: " + ways.Count);
+            //Console.WriteLine("Total Nodes: " + nodes.Count);
+            //Console.WriteLine("Total Ways: " + ways.Count);
         }
 
+        //public void API(List<PlanetOsmNode> nodes)
+        //{
+        //    OsmApiClient osmApiClient = new OsmApiClient();
+        //    Dictionary<long, List<NodeHistory>> nodeHistories = new Dictionary<long, List<NodeHistory>>();
+        //    for (int i = 0; i < 100; i++)
+        //    {
+        //        nodeHistories.Add(nodes[i].Id, osmApiClient.ReadAPI("node", nodes[i].Id.ToString()));
+        //        Console.WriteLine(i + " request completed total history for the node " + nodes[i].ToString() + " is " + nodeHistories.GetValueOrDefault(nodes[i].Id).Count);
+        //    }
+        //}
 
         public void parseAPI()
         {
